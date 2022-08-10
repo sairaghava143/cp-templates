@@ -1,0 +1,80 @@
+<snippet>
+	<content><![CDATA[
+struct binlift {
+
+	// THIS IMPLEMENTATION IS FOR WHEN VALUES ARE STORED IN THE EDGES
+
+	int N, JUMP;
+	vector<vector<int>> parent_table;
+	// vector<vector<long long>> tbl;
+
+	binlift() {}
+
+	binlift(int _N, int _JUMP) : N(_N), JUMP(_JUMP) {
+		parent_table = vector<vector<int>>(JUMP, vector<int>(N, -1));
+		// tbl = vector<vector<long long>>(JUMP, vector<long long>(N, 0));
+	}
+
+	void add_node(int v, int p) {
+		parent_table[0][v] = p;
+	}
+
+	// void add_node(int v, int p, long long w) {
+	// 	parent_table[0][v] = p;
+	// 	tbl[0][v] = w;
+	// }
+
+	long long merge(long long A, long long B) {
+		return max(A, B);
+	}
+
+	void build() {
+
+		for(int j = 1; j < JUMP; j++) {
+			for(int v = 0; v < N; v++) {
+				if(parent_table[j - 1][v] != -1) {
+					parent_table[j][v] = parent_table[j - 1][parent_table[j - 1][v]];
+					// tbl[j][v] = merge(tbl[j - 1][v], tbl[j - 1][parent_table[j - 1][v]]);
+				} else {
+					parent_table[j][v] = -1;
+				}
+			}
+		}
+	}
+
+	int lift_ancestor(int v, int dist) {
+
+		for(int bit = 0; bit < JUMP; bit++) {
+			if(v == -1) break;
+
+			if(dist & (1 << bit)) {
+				v = parent_table[bit][v];
+			}
+		}
+
+		return v;
+	}
+
+	// long long lift(int v, int dist) {
+
+	// 	long long retval = 0;
+
+	// 	for(int bit = 0; bit < JUMP; bit++) {
+	// 		if(v == -1) break;
+
+	// 		if(dist & (1 << bit)) {
+	// 			retval = merge(retval, tbl[bit][v]);
+	// 			v = parent_table[bit][v];
+	// 		}
+	// 	}
+
+	// 	return retval;
+	// }
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>binarylifting_struct</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+	<description>Struct for Binary Lifting on trees</description>
+</snippet>

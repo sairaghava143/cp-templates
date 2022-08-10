@@ -1,0 +1,115 @@
+<snippet>
+	<content><![CDATA[
+// using big = long long
+
+big modular_multiplicative_inverse(big n, big m) {
+
+	big retval = 1;
+	big M = m - 2;
+
+	while(M > 0) {
+
+		if(M & 1) {
+
+			retval = (retval * n) % m;
+		}
+
+		M = M >> 1;
+		n = (n * n) % m;
+	}
+
+	return retval % m;
+}
+
+const big MOD = 998244353;
+const big root = 15311432;
+const big root_inv = 469870224;
+const big root_pw = (1 << 23);
+
+void fft(vector<big>& a, bool invert = false) {
+
+	int n = (int)a.size();
+
+	for(int i = 1, j = 0; i < n; i++) {
+
+		int bit = (n >> 1);
+
+		for(; j & bit; bit >>= 1) {
+
+			j ^= bit;
+		}
+
+		j ^= bit;
+
+		if(i < j) {
+
+			swap(a[i], a[j]);
+		}
+	}
+
+
+	for(int len = 2; len <= n; len <<= 1) {
+
+		big wlen = invert ? root_inv : root;
+
+		for(int i = len; i < root_pw; i <<= 1) {
+
+			wlen = (wlen * wlen) % MOD;
+		}
+
+		for(int i = 0; i < n; i += len) {
+
+			big w = 1;
+			int half_len = len / 2;
+
+			for(int j = 0; j < half_len; j++) {
+
+				big u = a[i + j], v = (a[i + j + half_len] * w) % MOD;
+				a[i + j] = (u + v) % MOD;
+				a[i + j + half_len] = (u - v + MOD) % MOD;
+				w = (w * wlen) % MOD;
+			}
+		}
+	}
+
+	if(invert) {
+
+		int n_inv = modular_multiplicative_inverse(n, MOD);
+
+		for(auto& x : a) {
+
+			x = (1LL * x * n_inv) % MOD;
+		}
+	}
+}
+
+
+vector<big> multiply(vector<big> const& a, vector<big> const& b) {
+
+	vector<big> fa(a.begin(), a.end()), fb(b.begin(), b.end());
+	int n = 1;
+
+	while (n < (int)a.size() + (int)b.size()) {
+
+		n <<= 1;
+	}
+	
+	fa.resize(n);
+	fb.resize(n);
+
+	fft(fa);
+	fft(fb);
+
+	for (int i = 0; i < n; i++) {
+
+		fa[i] = (fa[i] * fb[i]) % MOD;
+	} 
+
+	fft(fa, true);
+	return fa;
+}
+]]></content>
+	<tabTrigger>ntt</tabTrigger>
+	<scope>source.c++</scope>
+	<description>NTT modulo 998244353</description>
+</snippet>

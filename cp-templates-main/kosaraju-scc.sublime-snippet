@@ -1,0 +1,82 @@
+<snippet>
+	<content><![CDATA[
+struct SCC {
+
+	int N;
+	// vector<vector<int>> adj;
+	// vector<vector<int>> rev_adj;
+	vector<int> vtd;
+	vector<int> scc_of;
+	vector<int> path;
+	int scc_id;
+
+	SCC(){}
+
+	SCC(vector<vector<int>>& adj, vector<vector<int>>& rev_adj) {
+
+		N = (int)adj.size();
+		scc_id = 0;
+		scc_of.assign(N, -1);
+		vtd.assign(N, 0);
+		kosaraju(adj, rev_adj);
+	}
+
+	// void add_edge(int u, int v) {
+
+	// 	adj[u].push_back(v);
+	// 	rev_adj[v].push_back(u);
+	// }
+
+	void dfs1(vector<vector<int>>& adj, int node) {
+
+		vtd[node] = 1;
+
+		for(int next : adj[node]) {
+
+			if(!vtd[next]) {
+
+				dfs1(adj, next);
+			}
+		}
+
+		path.push_back(node);
+	}
+
+	void dfs2(vector<vector<int>>& rev_adj, int node) {
+
+		for(int next : rev_adj[node]) {
+
+			if(scc_of[next] == -1) {
+
+				scc_of[next] = scc_of[node];
+				dfs2(rev_adj, next);
+			}
+		}
+	}
+
+	void kosaraju(vector<vector<int>>& adj, vector<vector<int>>& rev_adj) {
+
+		fr(v, 0, N) {
+
+			if(!vtd[v]) dfs1(adj, v);
+		}
+
+		reverse(path.begin(), path.end());
+
+		fr(i, 0, N) {
+
+			if(scc_of[path[i]] == -1) {
+
+				scc_of[path[i]] = scc_id++;
+				dfs2(rev_adj, path[i]);
+			}
+		}
+	}
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>kosaraju_scc</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+	<description>Naman's implementation for Kosaraju's SCC algorithm</description>
+</snippet>

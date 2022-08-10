@@ -1,0 +1,52 @@
+<snippet>
+	<content><![CDATA[
+template<typename T>
+struct prefix_sum {
+
+	int tl;
+	vector<T> t;
+
+	template<typename S>
+	prefix_sum(vector<S>& v) {
+
+		tl = (int)v.size();
+
+		if(!tl) {
+
+			return;
+		}
+
+		t.clear();
+		t.resize(tl, 0);
+		t[0] = v[0];
+
+		for(int i = 1; i < tl; i++) {
+
+			t[i] = t[i - 1] + v[i];
+		}
+	}
+
+	T query(int l, int r) {
+
+		if((tl == 0) || (l > r) || (r < 0)) {
+
+			return 0;
+		}
+
+		if(l > 0) {
+
+			return t[r] - t[l - 1];
+
+		} else {
+
+			return t[r];
+		}
+	}
+};
+]]></content>
+	<!-- Optional: Set a tabTrigger to define how to trigger the snippet -->
+	<tabTrigger>prefix_sum_struct</tabTrigger>
+	<!-- Optional: Set a scope to limit where the snippet will trigger -->
+	<scope>source.c++</scope>
+	<description>Prefix sum struct</description>
+</snippet>
